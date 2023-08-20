@@ -1,16 +1,18 @@
 import java.util.Scanner;
+import static java.util.Objects.isNull;
 
 public class Main {
     //Set the Number of Pizzas in Stock.
     static int pizzaStockCount = 100;
     //Track the Number of Pizzas Sold.
     static int soldPizzaCount = 0;
+    static int onetimeServedPizzaCount = 10;
     //Queues to Add Customers
     String[] Q1 = new String[2];
     String[] Q2 = new String[3];
     String[] Q3 = new String[5];
     //Store Served Customer Data(Multidimensional Array)
-    Object[][] servedCustomerData = new Object[10][4];
+    String[][] servedCustomerData = new String[10][4];
     //Control Program Execution
     static boolean runProgram;
 
@@ -20,34 +22,49 @@ public class Main {
 
     public void runMenu() {
         String choice;
+
         //Set True to Continue Execution
         runProgram = true;
 
-        do {
+        while (runProgram) {
             //Print Menu
             printMenu();
+
             //Get Customer's Choice
             choice = validInput("Enter Your Menu Option : ").toUpperCase();
 
-            //Perform Customer;s Choice
+            //Perform Customers Choice
             switch (choice) {
-                case "100", "VFQ":
+                case "100":
+                case "VFQ":
                     viewAllQueues();
                     break;
-                case "101", "VEQ":
+                case "101":
+                case "VEQ":
                     viewAllEmptyQueues();
                     break;
-                case "102", "ACQ":
+                case "102":
+                case "ACQ":
                     addCustomerToQueue();
                     break;
-                case "103", "RCQ":
+                case "103":
+                case "RCQ":
                     checkRemoveCustomerFromQueue();
-                    runMenu();
+                    break;
+                case "104":
+                    removeServedCustomer();
+                    break;
+                case "105":
+                    sortCustomerNames();
+                    break;
+                case "109":
+                    addPizzaToStock();
                     break;
                 default:
                     System.out.println("\nInvalid Menu Option! Please Check the Menu Options and Retry\n");
+                    break;
             }
-        } while (runProgram);
+        }
     }
 
     public void printMenu() {
@@ -77,14 +94,16 @@ public class Main {
         Scanner scan = new Scanner(System.in);
         String input;
 
-        do {
+        while (true) {
             System.out.print("\n**********************************************\n" + prompt);
             input = scan.nextLine().strip();
 
-            if (!input.matches("[a-zA-Z0-9\\s]+")) {
-                System.out.println("\nInvalid Menu Option! Please Check the Menu Options and Retry\n");
-            }
-        } while (!input.matches("[a-zA-Z0-9\\s]+"));
+            if (input.matches("[a-zA-Z0-9\\s]+"))
+                break;
+
+            System.out.println("\nInvalid Menu Option! Please Check the Menu Options and Retry\n");
+        }
+
         return input;
     }
 
@@ -92,28 +111,37 @@ public class Main {
         Scanner scan = new Scanner(System.in);
         String input;
 
-        do {
+        while (true) {
             System.out.print("\n**********************************************\n" + prompt);
             input = scan.nextLine().strip();
 
-            if (!input.matches("[a-zA-Z\\s]+")) {
-                System.out.println("\nInvalid Input! Please Check \n");
-            }
-        } while (!input.matches("[a-zA-Zw\\s]+"));
+            if (input.matches("[a-zA-Z\\s]+"))
+                break;
+
+            System.out.println("\nInvalid Input! Please Check \n");
+        }
+
         return input;
     }
 
     public static String validNumber(String prompt) {
         Scanner scan = new Scanner(System.in);
         String input;
+        int output;
 
-        do {
+        while (true) {
             System.out.print("\n**********************************************\n" + prompt);
             input = scan.nextLine().strip();
-            if (!input.matches("[0-9\\s]+")) {
-                System.out.println("\nInvalid Invalid! Please Check\n");
+
+            if (input.matches("[0-9\\s]+")) {
+                output = Integer.parseInt(input); // 0
+                if (output > 0)
+                    break;
             }
-        } while (!input.matches("[0-9\\s]+"));
+
+            System.out.println("\nInvalid Invalid! Please Check\n");
+        }
+
         return input;
     }
 
@@ -148,17 +176,33 @@ public class Main {
     //Display Empty Queues(101)
     public void viewAllEmptyQueues() {
         if (checkEmptySlot(Q1)) {
-            System.out.println("\nQueue One Has Empty Slots");
+            System.out.print("\nQueue One Has Empty Slots : ");
+            viewAllEmptySlots(Q1);
         }
         if (checkEmptySlot(Q2)) {
-            System.out.println("Queue Two Has Empty Slots");
+            System.out.print("Queue Two Has Empty Slots : ");
+            viewAllEmptySlots(Q2);
         }
         if (checkEmptySlot(Q3)) {
-            System.out.println("Queue Three Has Empty Slots");
+            System.out.print("Queue Three Has Empty Slots : ");
+            viewAllEmptySlots(Q3);
         }
         if (!checkEmptySlot(Q1) && !checkEmptySlot(Q2) && !checkEmptySlot(Q3)) {
             System.out.println("Queues Don't Have Empty Slots");
         }
+    }
+
+    public void viewAllEmptySlots(String[] queue) {
+        String output = "";
+        for (int i = 0; i < queue.length; i++) {
+            if (queue[i] == null) {
+                output += i + 1;
+                if (i != queue.length - 1) {
+                    output += ", ";
+                }
+            }
+        }
+        System.out.println(output);
     }
 
     //Check the Availability of Queue
@@ -189,8 +233,6 @@ public class Main {
     public void queueAvailability(String[] queue) {
         if (!checkEmptySlot(queue)) {
             System.out.println("This Queue is Full!! Choose Another Queue");
-            ;
-            runMenu();
         } else {
             addCustomerName(queue);
         }
@@ -216,23 +258,27 @@ public class Main {
         switch (choice) {
             case ("1"):
                 removeCustomerFromSlot(Q1);
+                break;
             case ("2"):
                 removeCustomerFromSlot(Q2);
+                break;
             case ("3"):
                 removeCustomerFromSlot(Q3);
+                break;
             default: {
                 System.out.println("Invalid Queue Number!! Please Check");
                 checkRemoveCustomerFromQueue();
+                break;
             }
         }
     }
 
     //
     public void removeCustomerFromSlot(String[] queue) {
-        int slot = Integer.parseInt(validNumber("Enter Slot Number to Remove Customer : "));
+        int slot = Integer.parseInt(validNumber("Enter Slot Number to Remove Customer : ")) -1;
         try {
             if (queue[slot] == null) {
-                String choice = validString("There is no Customer in this Slot!! Please Check");
+                System.out.println("There is no Customer in this Slot!! Please Check");
                 removeCustomerFromSlot(queue);
             } else {
                 queue[slot] = null;
@@ -240,24 +286,119 @@ public class Main {
                 moveCustomerToUpSlot(queue);
             }
         } catch (Exception IndexOutOfBondsException) {
-            String choice = validString("Not Existing Slot Number" + "Press 'y' to Select New Slot Number. Press 'n' for Back to Menu");
+            String choice = validString("Not Existing Slot Number" + "Press 'y' to Select New Slot Number. Press 'n' for Back to Menu : ").toLowerCase();
             if (choice.equals("y")) {
                 removeCustomerFromSlot(queue);
             }
-            runMenu();
         }
-        //
-        public void moveCustomerToUpSlot(String[] queue){
-            for (int i = 0; i < queue.length; i++) {
-                try {
-                    if (queue[i] == null) {
-                        queue[i] = queue[i + 1];
-                        queue[i + 1] = null;
+    }
+
+    public void moveCustomerToUpSlot(String[] queue){
+        for (int i = 0; i < queue.length - 1; i++) {
+            try {
+                if (queue[i] == null) {
+                    queue[i] = queue[i + 1];
+                    queue[i + 1] = null;
+                }
+            } catch (Exception IndexoutofBoundsException) {
+                System.out.println("index unbound error");
+                break;
+            }
+        }
+    }
+
+    public void removeServedCustomer() {
+        String choice = validNumber("Enter Queue Number of the Served Customer : ");
+        switch (choice) {
+            case ("1"):
+                removeServedCustomerSlot(choice, Q1);
+                break;
+            case ("2"):
+                removeServedCustomerSlot(choice, Q2);
+                break;
+            case ("3"):
+                removeServedCustomerSlot(choice, Q3);
+                break;
+            default: {
+                System.out.println("Invalid Queue Number!! Please Check");
+                checkRemoveCustomerFromQueue();
+                break;
+            }
+        }
+    }
+    public void removeServedCustomerSlot(String queueName, String[] queue) {
+        int slot = Integer.parseInt(validNumber("Enter Slot Number of Served Customer : ")) -1;
+        try {
+            if (queue[slot] == null) {
+                System.out.println("There is no Customer in this Slot!! Please Check");
+                removeServedCustomer();
+            } else {
+                pizzaStockCount -= onetimeServedPizzaCount;
+                soldPizzaCount += onetimeServedPizzaCount;
+                addServedCustomerData(queueName, queue[slot]);
+                queue[slot] = null;
+                System.out.println("Served and Removed the Customer ");
+                moveCustomerToUpSlot(queue);
+            }
+        } catch (Exception IndexOutOfBondsException) {
+            String choice = validString("Not Existing Slot Number" + "Press 'y' to Select New Slot Number. Press 'n' for Back to Menu : ").toLowerCase();
+            if (choice.equals("y")) {
+                removeServedCustomerSlot(queueName, queue);
+            }
+        }
+    }
+
+    public void addServedCustomerData(String queueName, String customerName){
+        for (int i = 0; i < servedCustomerData.length; i++){
+            if (servedCustomerData[i][0] == null){
+                servedCustomerData[i][0] = customerName;
+                servedCustomerData[i][1] = queueName;
+                break;
+            }
+        }
+    }
+
+    public void printCustomers() {
+        for (int i = 0; i < servedCustomerData.length; i++) {
+            if (!isNull(servedCustomerData[i][0]))
+                System.out.println(servedCustomerData[i][0]);
+        }
+    }
+
+    public void sortCustomerNames() {
+        for (int i = 0; i < servedCustomerData.length; i++) {
+            for (int j = 0; j < servedCustomerData.length; j++) {
+                if (i == j)
+                    continue;
+                if (isNull(servedCustomerData[i][0]) || isNull(servedCustomerData[j][0]))
+                    continue;
+
+                // get the min length of the given two words
+                int min = Math.min(servedCustomerData[i][0].length(), servedCustomerData[j][0].length());
+
+                for (int k = 0; k < min; k++) {
+                    if (servedCustomerData[i][0].charAt(k) == servedCustomerData[0][0].charAt(k))
+                        continue;
+                    if (servedCustomerData[i][0].charAt(0) < servedCustomerData[j][0].charAt(0)) {
+                        String temp = servedCustomerData[i][0];
+                        servedCustomerData[i][0] = servedCustomerData[j][0];
+                        servedCustomerData[j][0] = temp;
+                        break;
                     }
-                } catch (Exception IndexoutofBoundsException) {
-                    break;
                 }
             }
+        }
+        printCustomers();
+    }
+
+    public void addPizzaToStock() {
+        while (true) {
+            int n = Integer.parseInt(validNumber("Enter the pizza count : ")) -1;
+            if (n + pizzaStockCount <= 100) {
+                pizzaStockCount += n;
+                break;
+            }
+            System.out.println("Invalid Pizza Count");
         }
     }
 }
