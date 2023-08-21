@@ -1,0 +1,3 @@
+anupa, 1, 10
+ashan, 2, 10
+asiri, 3, 10

@@ -1,3 +1,4 @@
+import java.io.*;
 import java.util.Scanner;
 import static java.util.Objects.isNull;
 
@@ -15,6 +16,7 @@ public class Main {
     String[][] servedCustomerData = new String[10][4];
     //Control Program Execution
     static boolean runProgram;
+    String filename = "data.txt";
 
     public static void main(String[] args) {
         new Main().runMenu();
@@ -52,13 +54,30 @@ public class Main {
                     checkRemoveCustomerFromQueue();
                     break;
                 case "104":
+                case "PCQ":
                     removeServedCustomer();
                     break;
                 case "105":
+                case "VCS":
                     sortCustomerNames();
                     break;
+                case "106":
+                    storeProgramData();
+                    break;
+                case "107":
+                    loadStoredData();
+                    break;
+                case "108":
+                case "STK":
+                    viewRemainingPizzaStock();
+                    break;
                 case "109":
+                case "AFS":
                     addPizzaToStock();
+                    break;
+                case "999":
+                case "EXT":
+                    exit();
                     break;
                 default:
                     System.out.println("\nInvalid Menu Option! Please Check the Menu Options and Retry\n");
@@ -176,22 +195,22 @@ public class Main {
     //Display Empty Queues(101)
     public void viewAllEmptyQueues() {
         if (checkEmptySlot(Q1)) {
-            System.out.print("\nQueue One Has Empty Slots : ");
+            System.out.print("\nQueue 1 : ");
             viewAllEmptySlots(Q1);
         }
         if (checkEmptySlot(Q2)) {
-            System.out.print("Queue Two Has Empty Slots : ");
+            System.out.print("Queue 2 : ");
             viewAllEmptySlots(Q2);
         }
         if (checkEmptySlot(Q3)) {
-            System.out.print("Queue Three Has Empty Slots : ");
+            System.out.print("Queue 3 : ");
             viewAllEmptySlots(Q3);
         }
         if (!checkEmptySlot(Q1) && !checkEmptySlot(Q2) && !checkEmptySlot(Q3)) {
             System.out.println("Queues Don't Have Empty Slots");
         }
     }
-
+    //Check Empty Slot
     public void viewAllEmptySlots(String[] queue) {
         String output = "";
         for (int i = 0; i < queue.length; i++) {
@@ -232,7 +251,7 @@ public class Main {
     //Check Queue Availability to Add Customer to Queue
     public void queueAvailability(String[] queue) {
         if (!checkEmptySlot(queue)) {
-            System.out.println("This Queue is Full!! Choose Another Queue");
+            System.out.println("\nThis Queue is Full!! Choose Another Queue");
         } else {
             addCustomerName(queue);
         }
@@ -252,7 +271,7 @@ public class Main {
     //
 
 
-    //
+    //Remove Customer From Queue(103)
     public void checkRemoveCustomerFromQueue() {
         String choice = validNumber("Enter Queue Number to Remove Customer : ");
         switch (choice) {
@@ -273,13 +292,13 @@ public class Main {
         }
     }
 
-    //
+    //Remove Customer From Given Slot
     public void removeCustomerFromSlot(String[] queue) {
         int slot = Integer.parseInt(validNumber("Enter Slot Number to Remove Customer : ")) -1;
         try {
             if (queue[slot] == null) {
                 System.out.println("There is no Customer in this Slot!! Please Check");
-                removeCustomerFromSlot(queue);
+                checkRemoveCustomerFromQueue();
             } else {
                 queue[slot] = null;
                 System.out.println("Customer Removed from Queue");
@@ -293,6 +312,7 @@ public class Main {
         }
     }
 
+    //Move Customer To Upper Slot
     public void moveCustomerToUpSlot(String[] queue){
         for (int i = 0; i < queue.length - 1; i++) {
             try {
@@ -306,7 +326,7 @@ public class Main {
             }
         }
     }
-
+    //Remove Served Customer(104)
     public void removeServedCustomer() {
         String choice = validNumber("Enter Queue Number of the Served Customer : ");
         switch (choice) {
@@ -326,6 +346,7 @@ public class Main {
             }
         }
     }
+    //Remove Served Customer from Slot
     public void removeServedCustomerSlot(String queueName, String[] queue) {
         int slot = Integer.parseInt(validNumber("Enter Slot Number of Served Customer : ")) -1;
         try {
@@ -347,7 +368,7 @@ public class Main {
             }
         }
     }
-
+    //Add the Served Customer Data to Array
     public void addServedCustomerData(String queueName, String customerName){
         for (int i = 0; i < servedCustomerData.length; i++){
             if (servedCustomerData[i][0] == null){
@@ -357,14 +378,14 @@ public class Main {
             }
         }
     }
-
+    //Display Customer's Names Before Sort or After
     public void printCustomers() {
         for (int i = 0; i < servedCustomerData.length; i++) {
             if (!isNull(servedCustomerData[i][0]))
                 System.out.println(servedCustomerData[i][0]);
         }
     }
-
+    //Sort Customer's Names in Alphabetical Order(105)
     public void sortCustomerNames() {
         for (int i = 0; i < servedCustomerData.length; i++) {
             for (int j = 0; j < servedCustomerData.length; j++) {
@@ -390,15 +411,66 @@ public class Main {
         }
         printCustomers();
     }
+    //
+    public void storeProgramData() {
+        try {
+            PrintWriter writer = new PrintWriter(new FileWriter(filename));
+            for (int i = 0; i < servedCustomerData.length; i++) {
+                if (servedCustomerData[i][0] != null) {
+                    writer.println(servedCustomerData[i][0] + ", " + servedCustomerData[i][1] + ", " + onetimeServedPizzaCount);
+                }
+            }
+            writer.close();
+            System.out.println("Data saved to the file");
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    //
+    public void loadStoredData(){
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(filename));
+            String l;
+            while ((l = reader.readLine()) != null) {
+                System.out.println(l);
+            }
+            reader.close();
+        }
+        catch(IOException e) {
+            e.printStackTrace();
+        }
+    }
 
+    //Display Remaining Pizza Stock(108)
+    public void viewRemainingPizzaStock(){
+        System.out.println("\n* There are " + pizzaStockCount + " Pizzas in Stock");
+    }
+    //Add Pizzas to Stock(109)
     public void addPizzaToStock() {
         while (true) {
-            int n = Integer.parseInt(validNumber("Enter the pizza count : ")) -1;
+            int n = Integer.parseInt(validNumber("Enter the pizza count : ")) ;
             if (n + pizzaStockCount <= 100) {
                 pizzaStockCount += n;
+                System.out.println("\n* Add to Stock " + n + " Pizzas");
+                System.out.println("* There are "+ pizzaStockCount + " Pizzas in Stock Now");
                 break;
             }
-            System.out.println("Invalid Pizza Count");
+            System.out.println("\nInvalid Pizza Count");
+        }
+    }
+    //Exit Programme
+    public void exit(){
+        String choice = validString("Press 'Y' If you Want to Exit or Press 'N' for Back to Menu : ").toUpperCase();
+        switch (choice){
+            case ("Y"):
+                runProgram = false;
+                break;
+            case ("N"):
+                runMenu();
+                break;
+            default:
+                System.out.println("\nInvalid Choice! Please Check");
         }
     }
 }
