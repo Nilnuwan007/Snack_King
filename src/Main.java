@@ -263,7 +263,7 @@ public class Main {
         for (int i = 0; i < queue.length; i++) {
             if (queue[i] == null) {
                 queue[i] = custName;
-                System.out.println(custName + " Add Successfully!");
+                System.out.println("\n" + custName + " Add Successfully!");
                 break;
             }
         }
@@ -285,7 +285,7 @@ public class Main {
                 removeCustomerFromSlot(Q3);
                 break;
             default: {
-                System.out.println("Invalid Queue Number!! Please Check");
+                System.out.println("\nInvalid Queue Number!! Please Check");
                 checkRemoveCustomerFromQueue();
                 break;
             }
@@ -297,15 +297,15 @@ public class Main {
         int slot = Integer.parseInt(validNumber("Enter Slot Number to Remove Customer : ")) -1;
         try {
             if (queue[slot] == null) {
-                System.out.println("There is no Customer in this Slot!! Please Check");
+                System.out.println("\nThere is no Customer in this Slot!! Please Check");
                 checkRemoveCustomerFromQueue();
             } else {
                 queue[slot] = null;
-                System.out.println("Customer Removed from Queue");
+                System.out.println("\nCustomer Removed from Queue");
                 moveCustomerToUpSlot(queue);
             }
         } catch (Exception IndexOutOfBondsException) {
-            String choice = validString("Not Existing Slot Number" + "Press 'y' to Select New Slot Number. Press 'n' for Back to Menu : ").toLowerCase();
+            String choice = validString("\nNot Existing Slot Number" + "Press 'y' to Select New Slot Number. Press 'n' for Back to Menu : ").toLowerCase();
             if (choice.equals("y")) {
                 removeCustomerFromSlot(queue);
             }
@@ -417,7 +417,7 @@ public class Main {
             PrintWriter writer = new PrintWriter(new FileWriter(filename));
             for (int i = 0; i < servedCustomerData.length; i++) {
                 if (servedCustomerData[i][0] != null) {
-                    writer.println(servedCustomerData[i][0] + ", " + servedCustomerData[i][1] + ", " + onetimeServedPizzaCount);
+                    writer.println(servedCustomerData[i][0] + " bought " +  onetimeServedPizzaCount + " pizzas from queue " + servedCustomerData[i][1] + ".");
                 }
             }
             writer.close();
