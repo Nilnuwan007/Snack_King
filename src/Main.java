@@ -158,7 +158,7 @@ public class Main {
                     break;
             }
 
-            System.out.println("\nInvalid Invalid! Please Check\n");
+            System.out.println("\nInvalid Input! Please Check\n");
         }
 
         return input;

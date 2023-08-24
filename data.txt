@@ -1,3 +1,5 @@
-anupa bought10 pizzas from queue1
-asiri bought10 pizzas from queue1
-ashan bought10 pizzas from queue2
+ashan bought 10 pizzas from queue 1.
+asnupa bought 10 pizzas from queue 1.
+asiri bought 10 pizzas from queue 2.
+jine bought 10 pizzas from queue 2.
+john bought 10 pizzas from queue 3.
